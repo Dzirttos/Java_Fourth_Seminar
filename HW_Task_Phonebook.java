@@ -12,24 +12,19 @@ import java.util.Scanner;
 // - находить по логину телефон/список телефонов
 
 public class HW_Task_Phonebook {
-    private static Map<String, String> phoneBook = new HashMap<>();
-    // private static Map<String, List<String>> phoneBook = new HashMap<>();
+
+    private static Map<String, List<String>> phoneBook = new HashMap<>();
 
     public static void main(String[] args) {
         System.out.print("\033[H\033[J");
 
-        // List<String> phoneMemo1 = new ArrayList(Arrays.asList("8999","8777"));
-        // List<String> phoneMemo2 = new ArrayList(Arrays.asList("8966","8754","4444"));
-        // List<String> phoneMemo3 = new ArrayList(Arrays.asList("8912"));
+        List<String> phoneMemo1 = new ArrayList(Arrays.asList("8999", "8777"));
+        List<String> phoneMemo2 = new ArrayList(Arrays.asList("8966", "8754", "8444"));
+        List<String> phoneMemo3 = new ArrayList(Arrays.asList("8912", "8444"));
 
-        // phoneBook.put("Goga", phoneMemo1);
-        // phoneBook.put("Morpheus", phoneMemo2);
-        // phoneBook.put("Kal-el", phoneMemo3);
-        phoneBook.put("Goga", "8999");
-        phoneBook.put("Morpheus", "8966");
-        phoneBook.put("Kal-el", "8912");
-
-        // System.out.println(phoneBook);
+        phoneBook.put("Goga", phoneMemo1);
+        phoneBook.put("Morpheus", phoneMemo2);
+        phoneBook.put("Kal-el", phoneMemo3);
 
         System.out.println("Добро пожаловать в телефонную книгу." +
                 "Пожалуйста, введите соответствующее число меню:\n" +
@@ -51,8 +46,10 @@ public class HW_Task_Phonebook {
             case "2":
                 System.out.println("Пожалуйста, введите логин нового абонента: ");
                 String a = userInput.nextLine();
-                System.out.println("Пожалуйста, введите телефон нового абонента: ");
-                String b = userInput.nextLine();
+                System.out.println(
+                        "Пожалуйста, введите телефон нового абонента. Если номеров несколько, то введите их через запятую и пробел: ");
+                // String b = userInput.nextLine();
+                List<String> b = new ArrayList(Arrays.asList(userInput.nextLine()));
                 addToPhoneBook(a, b);
                 System.out.println("\u001B[32m");
                 PrintPhonebook();
@@ -65,60 +62,60 @@ public class HW_Task_Phonebook {
                 PrintPhonebook();
                 break;
             case "4":
-                PrintPhonebook();
+                // PrintPhonebook();  // для удобства ввода на логина с клавиатуры
                 System.out.println("Пожалуйста, введите логин для поиска номера телефона: ");
                 String d = userInput.nextLine();
                 System.out.println();
                 System.out.println(FindLogin(d));
                 break;
             case "5":
-                PrintPhonebook();
+                // PrintPhonebook();  // для удобства ввода на телефона с клавиатуры
                 System.out.println("Пожалуйста, введите номер телефона для поиска логина: ");
                 String f = userInput.nextLine();
-                System.out.println();
-                System.out.println(FindPhoneNumber(phoneBook, f));
+                FindPhoneNumber(phoneBook, f);
                 break;
             default:
-                System.out.println("\u001B[31mНевернный ввод! Попробуйте еще раз.");
+                System.out.println("\u001B[31mНевернный ввод! Попробуйте еще раз!");
                 break;
-
         }
-
         userInput.close();
-
+        System.out.println();
     }
 
     public static void PrintPhonebook() {
         System.out.println("Телефонный справочник: ");
-        for (Map.Entry<String, String> k : phoneBook.entrySet()) {
+        for (Map.Entry<String, List<String>> k : phoneBook.entrySet()) {
             System.out.println(k.getKey() + ": " + k.getValue());
         }
     }
 
-    private static void addToPhoneBook(String login, String phonenumber) {
+    private static void addToPhoneBook(String login, List<String> phonenumber) {
         phoneBook.put(login, phonenumber);
     }
 
     private static void deleteByPhoneNumber(String phone) {
         phoneBook.values().removeIf(value -> value.contains(phone));
-
     }
 
-    public static String FindLogin(String login) {
-        String result = phoneBook.get(login);
-        if (result == null)
-            return "\u001B[31mТакой логин не зарегистрирован";
+    public static List<String> FindLogin(String login) {
+        List<String> result = phoneBook.get(login);
+        if (result == null) {
+            System.out.println("\u001B[31mТакой логин не зарегистрирован");
+            System.exit(0);
+        }
         return result;
     }
 
-    public static <Key, Value> Key FindPhoneNumber(Map<Key, Value> map, Value value) {
-        for (Map.Entry<Key, Value> entry : map.entrySet()) {
-            if (value.equals(entry.getValue())) {
-                return entry.getKey();
+    public static void FindPhoneNumber(Map<String, List<String>> map, String value) {
+        int count = 0;
+        for (Map.Entry<String, List<String>> item : map.entrySet()) {
+            if (item.getValue().contains(value)) {
+                System.out.println("\n" + item.getKey());
+                count += 1;
             }
         }
-        System.out.println("\u001B[31mУказанный номер телефона не найден");
-        System.exit(0);
-        return null;
+        if (count == 0) {
+            System.out.println("\u001B[31mУказанный номер телефона не найден");
+        }
     }
 }
